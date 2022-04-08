@@ -31,27 +31,51 @@ public class BankingService
     }
 
     // دریافت اطلاعات کارت بانکی از طریق شماره کارت
-    public CardInfoResult GetCardinfo(string cardNumber)
+    public CardInfoResult GetCardInfo(string cardNumber)
     {
         CheckAuthentication();
         return Get<CardInfoResult>($"cards?number={cardNumber}");
     }
-    public async Task<CardInfoResult> GetCardinfoAsync(string cardNumber)
+    public async Task<CardInfoResult> GetCardInfoAsync(string cardNumber)
     {
         await CheckAuthenticationAsync();
         return await GetAsync<CardInfoResult>($"cards?number={cardNumber}");
     }
 
     // دریافت اطلاعات کارت بانکی از طریق شماره شبا
-    public IBanInfoResult GetIbanInfo(string iBan)
+    public IBanInfoResult GetIbanInfo(string ibanNumber)
     {
         CheckAuthentication();
-        return Get<IBanInfoResult>($"ibans?value=IR{iBan}");
+        return Get<IBanInfoResult>($"ibans?value=IR{ibanNumber}");
     }
     public async Task<IBanInfoResult> GetIbanInfoAsync(string ibanNumber)
     {
         await CheckAuthenticationAsync();
         return await GetAsync<IBanInfoResult>($"ibans?value=IR{ibanNumber}");
+    }
+
+    // بررسی مطابقت شماره شبا و نام و نام خانوادگی
+    public IBanAndFullNameMatchModel IsIBanAndFullNameMatch(string ibanNumber, string fullName)
+    {
+        CheckAuthentication();
+        return Get<IBanAndFullNameMatchModel>($"services/matching?iban=IR{ibanNumber}&name={fullName}");
+    }
+    public async Task<IBanAndFullNameMatchModel> IsIBanAndFullNameMatchAsync(string ibanNumber,string fullName)
+    {
+        await CheckAuthenticationAsync();
+        return await GetAsync<IBanAndFullNameMatchModel>($"services/matching?iban=IR{ibanNumber}&name={fullName}");
+    }
+
+    // بررسی مطابقت شماره کارت و نام و نام خانوادگی
+    public CardNumberAndFullNameMatchModel IsCardNumberAndFullNameMatch(string cardNumber, string fullName)
+    {
+        CheckAuthentication();
+        return Get<CardNumberAndFullNameMatchModel>($"services/matching?cardNumber={cardNumber}&name={fullName}");
+    }
+    public async Task<CardNumberAndFullNameMatchModel> IsCardNumberAndFullNameMatchAsync(string cardNumber, string fullName)
+    {
+        await CheckAuthenticationAsync();
+        return await GetAsync<CardNumberAndFullNameMatchModel>($"services/matching?cardNumber={cardNumber}&name={fullName}");
     }
 
     #region Authentication Methods
