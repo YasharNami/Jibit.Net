@@ -6,9 +6,9 @@
     <Nullable>enable</Nullable>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <NeutralLanguage>fa-IR</NeutralLanguage>
-    <PackageReleaseNotes>افزوده شدن امکاناتی از جمله : بررسی مطابقت شماره شبا و نام و نام خانوادگی، بررسی مطابقت شماره کارت و نام و نام خانوادگی و سایر موارد زیرساختی</PackageReleaseNotes>
+    <PackageReleaseNotes>تغییر در زیرساخت درخواست ها ، مدیریت خطا ها</PackageReleaseNotes>
     <PackageTags>Jibit Jibit.Net</PackageTags>
-    <Description>Jibit Payment, Banking and KYC Service</Description>
+    <Description>سرویس احراز هویتی و استعلام گیری اطلاعات بانکی و هویتی جیبیت</Description>
     <Company>Viral-Team</Company>
     <Authors>YasharNami</Authors>
     <PackageIcon>jibit.png</PackageIcon>
@@ -16,11 +16,10 @@
     <RepositoryUrl>https://github.com/YasharNami/Jibit.Net</RepositoryUrl>
 	  <PackageLicenseExpression>MIT</PackageLicenseExpression>
 	  <PackageId>Jibit.Net</PackageId>
-	  <Version>1.0.1</Version>
+	  <Version>1.0.2</Version>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="System.Resources.ResourceManager" Version="4.3.0" />
   </ItemGroup>
 

@@ -1,17 +1,11 @@
-﻿using Jibit.Banking.Models;
-using Jibit.Banking.Resources;
+﻿using Jibit.Banking.Resources;
 using Jibit.Base;
 using Jibit.Base.Models;
 using Jibit.Commons;
-using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Resources;
-using System.Text;
-using System.Threading.Tasks;
+using System.Text.Json;
 
 namespace Jibit.Banking;
 
@@ -133,12 +127,12 @@ public class BankingService
         httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _jibitSettings.AccessToken);
         var httpResponseMessage = httpClient.GetAsync($"{_jibitSettings.BaseApiUrl}/{route}");
         string value = httpResponseMessage.Result.Content.ReadAsStringAsync().GetAwaiter().GetResult();
-        var response = JsonConvert.DeserializeObject<TResult>(value);
+        var response = JsonSerializer.Deserialize<TResult>(value);
         var result = new ApiResult<TResult>(true,ApiResultStatusCode.Success, response);
 
         if (!httpResponseMessage.Result.IsSuccessStatusCode)
         {
-            var error = JsonConvert.DeserializeObject<ErrorResult>(value);
+            var error = JsonSerializer.Deserialize<ErrorResult>(value);
             result.isSuccess = false;
             ResourceManager myManager = new ResourceManager(typeof(BankingErrors));
             result.message = myManager.GetString(error.Code) is not default(string) ? myManager.GetString(error.Code) : ApiResultStatusCode.BadRequest.ToDisplay();
@@ -154,12 +148,12 @@ public class BankingService
         httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _jibitSettings.AccessToken);
         var httpResponseMessage = await httpClient.GetAsync($"{_jibitSettings.BaseApiUrl}/{route}");
         string value = await httpResponseMessage.Content.ReadAsStringAsync();
-        var response = JsonConvert.DeserializeObject<TResult>(value);
+        var response = JsonSerializer.Deserialize<TResult>(value);
         var result = new ApiResult<TResult>(true, ApiResultStatusCode.Success, response);
 
         if (!httpResponseMessage.IsSuccessStatusCode)
         {
-            var error = JsonConvert.DeserializeObject<ErrorResult>(value);
+            var error = JsonSerializer.Deserialize<ErrorResult>(value);
             result.isSuccess = false;
             ResourceManager myManager = new ResourceManager(typeof(BankingErrors));
             result.message = myManager.GetString(error.Code) is not default(string) ? myManager.GetString(error.Code) : ApiResultStatusCode.BadRequest.ToDisplay();
@@ -179,12 +173,12 @@ public class BankingService
 
         var httpResponseMessage = httpClient.PostAsJsonAsync($"{_jibitSettings.BaseApiUrl}/{route}", data);
         string value = httpResponseMessage.Result.Content.ReadAsStringAsync().GetAwaiter().GetResult();
-        var response = JsonConvert.DeserializeObject<TResult>(value);
+        var response = JsonSerializer.Deserialize<TResult>(value);
         var result = new ApiResult<TResult>(true, ApiResultStatusCode.Success, response);
 
         if (!httpResponseMessage.Result.IsSuccessStatusCode)
         {
-            var error = JsonConvert.DeserializeObject<ErrorResult>(value);
+            var error = JsonSerializer.Deserialize<ErrorResult>(value);
             result.isSuccess = false;
             ResourceManager myManager = new ResourceManager(typeof(BankingErrors));
             result.message = myManager.GetString(error.Code) is not default(string) ? myManager.GetString(error.Code) : ApiResultStatusCode.BadRequest.ToDisplay(); 
@@ -204,12 +198,12 @@ public class BankingService
 
         var httpResponseMessage = await httpClient.PostAsJsonAsync($"{_jibitSettings.BaseApiUrl}/{route}", data);
         string value = await httpResponseMessage.Content.ReadAsStringAsync();
-        var response = JsonConvert.DeserializeObject<TResult>(value);
+        var response = JsonSerializer.Deserialize<TResult>(value);
         var result = new ApiResult<TResult>(true, ApiResultStatusCode.Success, response);
 
         if (!httpResponseMessage.IsSuccessStatusCode)
         {
-            var error = JsonConvert.DeserializeObject<ErrorResult>(value);
+            var error = JsonSerializer.Deserialize<ErrorResult>(value);
             result.isSuccess = false;
             ResourceManager myManager = new ResourceManager(typeof(BankingErrors));
             result.message = myManager.GetString(error.Code) is not default(string) ? myManager.GetString(error.Code) : ApiResultStatusCode.BadRequest.ToDisplay(); result.status = ApiResultStatusCode.BadRequest;

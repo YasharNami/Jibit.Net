@@ -1,12 +1,8 @@
 ﻿using Jibit.Commons;
-using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
 using System.Net;
-using System.Text;
-using System.Threading.Tasks;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace Jibit.Base.Models;
 
@@ -15,7 +11,7 @@ public class ApiResult
     public bool isSuccess { get; set; }
     public ApiResultStatusCode status { get; set; }
 
-    [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public string message { get; set; }
 
     public ApiResult(bool isSuccess, ApiResultStatusCode statusCode, string message = null)
@@ -35,7 +31,7 @@ public class ApiResult
 
 public class ApiResult<TData> : ApiResult
 {
-    [JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public TData Data { get; set; }
 
     public ApiResult(bool isSuccess, ApiResultStatusCode statusCode, TData data, string message = null)
