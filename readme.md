@@ -26,6 +26,20 @@
 - بررسی مطابقت نام و نام خانوادگی،کد ملی و تاریخ تولد
 
 
+طریقه نصب پکیج در پروژه توسط Package-Manager  :
+
+```
+Install-Package Jibit.Net -Version 1.0.2
+```
+
+حال تنها کافیست که یک شی از کلاینت بسازید :
+```
+JibitClient client = new JibitClient("your api key","your secret key");
+```
+
+
+
+
 
 ## :sparkling_heart: حمایت و پشتیبانی
 
