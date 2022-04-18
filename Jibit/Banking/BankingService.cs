@@ -1,12 +1,15 @@
 ﻿using Jibit.Banking.Models;
+using Jibit.Banking.Resources;
 using Jibit.Base;
 using Jibit.Base.Models;
+using Jibit.Commons;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
+using System.Resources;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -19,60 +22,60 @@ public class BankingService
 
 
     // تبدیل شماره کارت بانکی به شماره شبا
-    public CartToIBanResult CardToIBan(string cardNumber)
+    public ApiResult<CartToIBanResult> CardToIBan(string cardNumber)
     {
         CheckAuthentication();
         return Get<CartToIBanResult>($"cards?number={cardNumber}&iban=true");
     }
-    public async Task<CartToIBanResult> CardToIBanAsync(string cardNumber)
+    public async Task<ApiResult<CartToIBanResult>> CardToIBanAsync(string cardNumber)
     {
         await CheckAuthenticationAsync();
         return await GetAsync<CartToIBanResult>($"cards?number={cardNumber}&iban=true");
     }
 
     // دریافت اطلاعات کارت بانکی از طریق شماره کارت
-    public CardInfoResult GetCardInfo(string cardNumber)
+    public ApiResult<CardInfoResult> GetCardInfo(string cardNumber)
     {
         CheckAuthentication();
         return Get<CardInfoResult>($"cards?number={cardNumber}");
     }
-    public async Task<CardInfoResult> GetCardInfoAsync(string cardNumber)
+    public async Task<ApiResult<CardInfoResult>> GetCardInfoAsync(string cardNumber)
     {
         await CheckAuthenticationAsync();
         return await GetAsync<CardInfoResult>($"cards?number={cardNumber}");
     }
 
     // دریافت اطلاعات کارت بانکی از طریق شماره شبا
-    public IBanInfoResult GetIbanInfo(string ibanNumber)
+    public ApiResult<IBanInfoResult> GetIbanInfo(string ibanNumber)
     {
         CheckAuthentication();
         return Get<IBanInfoResult>($"ibans?value=IR{ibanNumber}");
     }
-    public async Task<IBanInfoResult> GetIbanInfoAsync(string ibanNumber)
+    public async Task<ApiResult<IBanInfoResult>> GetIbanInfoAsync(string ibanNumber)
     {
         await CheckAuthenticationAsync();
         return await GetAsync<IBanInfoResult>($"ibans?value=IR{ibanNumber}");
     }
 
     // بررسی مطابقت شماره شبا و نام و نام خانوادگی
-    public IBanAndFullNameMatchModel IsIBanAndFullNameMatch(string ibanNumber, string fullName)
+    public ApiResult<IBanAndFullNameMatchModel> IsIBanAndFullNameMatch(string ibanNumber, string fullName)
     {
         CheckAuthentication();
         return Get<IBanAndFullNameMatchModel>($"services/matching?iban=IR{ibanNumber}&name={fullName}");
     }
-    public async Task<IBanAndFullNameMatchModel> IsIBanAndFullNameMatchAsync(string ibanNumber,string fullName)
+    public async Task<ApiResult<IBanAndFullNameMatchModel>> IsIBanAndFullNameMatchAsync(string ibanNumber,string fullName)
     {
         await CheckAuthenticationAsync();
         return await GetAsync<IBanAndFullNameMatchModel>($"services/matching?iban=IR{ibanNumber}&name={fullName}");
     }
 
     // بررسی مطابقت شماره کارت و نام و نام خانوادگی
-    public CardNumberAndFullNameMatchModel IsCardNumberAndFullNameMatch(string cardNumber, string fullName)
+    public ApiResult<CardNumberAndFullNameMatchModel> IsCardNumberAndFullNameMatch(string cardNumber, string fullName)
     {
         CheckAuthentication();
         return Get<CardNumberAndFullNameMatchModel>($"services/matching?cardNumber={cardNumber}&name={fullName}");
     }
-    public async Task<CardNumberAndFullNameMatchModel> IsCardNumberAndFullNameMatchAsync(string cardNumber, string fullName)
+    public async Task<ApiResult<CardNumberAndFullNameMatchModel>> IsCardNumberAndFullNameMatchAsync(string cardNumber, string fullName)
     {
         await CheckAuthenticationAsync();
         return await GetAsync<CardNumberAndFullNameMatchModel>($"services/matching?cardNumber={cardNumber}&name={fullName}");
@@ -84,18 +87,18 @@ public class BankingService
         var authenticationResult = Post<AuthenticationResult>("tokens/generate",
             new AuthenthicationRequest(_jibitSettings.ApiKey, _jibitSettings.SecretKey));
         _jibitSettings.CreatedAt = DateTime.Now;
-        _jibitSettings.AccessToken = authenticationResult.AccessToken;
-        _jibitSettings.RefreshToken = authenticationResult.RefreshToken;
-        return authenticationResult;
+        _jibitSettings.AccessToken = authenticationResult.Data.AccessToken;
+        _jibitSettings.RefreshToken = authenticationResult.Data.RefreshToken;
+        return authenticationResult.Data;
     }
     protected async Task<AuthenticationResult> AuthenticateAsync()
     {
         var authenticationResult = await PostAsync<AuthenticationResult>("tokens/generate",
             new AuthenthicationRequest(_jibitSettings.ApiKey, _jibitSettings.SecretKey));
         _jibitSettings.CreatedAt = DateTime.Now;
-        _jibitSettings.AccessToken = authenticationResult.AccessToken;
-        _jibitSettings.RefreshToken = authenticationResult.RefreshToken;
-        return authenticationResult;
+        _jibitSettings.AccessToken = authenticationResult.Data.AccessToken;
+        _jibitSettings.RefreshToken = authenticationResult.Data.RefreshToken;
+        return authenticationResult.Data;
     }
 
     protected AuthenticationResult RefreshAuthentication()
@@ -103,18 +106,18 @@ public class BankingService
         var authenticationResult = Post<AuthenticationResult>("tokens/refresh",
             new RefreshTokenRequest(_jibitSettings.AccessToken, _jibitSettings.RefreshToken));
         _jibitSettings.CreatedAt = DateTime.Now;
-        _jibitSettings.AccessToken = authenticationResult.AccessToken;
-        _jibitSettings.RefreshToken = authenticationResult.RefreshToken;
-        return authenticationResult;
+        _jibitSettings.AccessToken = authenticationResult.Data.AccessToken;
+        _jibitSettings.RefreshToken = authenticationResult.Data.RefreshToken;
+        return authenticationResult.Data;
     }
     protected async Task<AuthenticationResult> RefreshAuthenticationAsync()
     {
         var authenticationResult = await PostAsync<AuthenticationResult>("tokens/refresh",
             new RefreshTokenRequest(_jibitSettings.AccessToken, _jibitSettings.RefreshToken));
         _jibitSettings.CreatedAt = DateTime.Now;
-        _jibitSettings.AccessToken = authenticationResult.AccessToken;
-        _jibitSettings.RefreshToken = authenticationResult.RefreshToken;
-        return authenticationResult;
+        _jibitSettings.AccessToken = authenticationResult.Data.AccessToken;
+        _jibitSettings.RefreshToken = authenticationResult.Data.RefreshToken;
+        return authenticationResult.Data;
     }
 
     protected bool IsTokenExpired() => _jibitSettings.CreatedAt.AddHours(24) > DateTime.Now;
@@ -123,39 +126,49 @@ public class BankingService
     #endregion
 
     #region Http Methods
-    protected TResult Get<TResult>(string route)
+    protected ApiResult<TResult> Get<TResult>(string route)
     {
         using var httpClient = new HttpClient();
         httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
         httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _jibitSettings.AccessToken);
         var httpResponseMessage = httpClient.GetAsync($"{_jibitSettings.BaseApiUrl}/{route}");
         string value = httpResponseMessage.Result.Content.ReadAsStringAsync().GetAwaiter().GetResult();
-        if (httpResponseMessage.Result.IsSuccessStatusCode)
+        var response = JsonConvert.DeserializeObject<TResult>(value);
+        var result = new ApiResult<TResult>(true,ApiResultStatusCode.Success, response);
+
+        if (!httpResponseMessage.Result.IsSuccessStatusCode)
         {
-            var response = JsonConvert.DeserializeObject<TResult>(value);
-            return response;
+            var error = JsonConvert.DeserializeObject<ErrorResult>(value);
+            result.isSuccess = false;
+            ResourceManager myManager = new ResourceManager(typeof(BankingErrors));
+            result.message = myManager.GetString(error.Code) is not default(string) ? myManager.GetString(error.Code) : ApiResultStatusCode.BadRequest.ToDisplay();
+            result.status = ApiResultStatusCode.BadRequest; return result;
         }
-        var errorResult = JsonConvert.DeserializeObject<ErrorResult>(value);
-        throw new ArgumentException(errorResult.Code);
+        return result;
     }
 
-    protected async Task<TResult> GetAsync<TResult>(string route)
+    protected async Task<ApiResult<TResult>> GetAsync<TResult>(string route)
     {
         using var httpClient = new HttpClient();
         httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
         httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _jibitSettings.AccessToken);
         var httpResponseMessage = await httpClient.GetAsync($"{_jibitSettings.BaseApiUrl}/{route}");
         string value = await httpResponseMessage.Content.ReadAsStringAsync();
-        if (httpResponseMessage.IsSuccessStatusCode)
+        var response = JsonConvert.DeserializeObject<TResult>(value);
+        var result = new ApiResult<TResult>(true, ApiResultStatusCode.Success, response);
+
+        if (!httpResponseMessage.IsSuccessStatusCode)
         {
-            var response = JsonConvert.DeserializeObject<TResult>(value);
-            return response;
+            var error = JsonConvert.DeserializeObject<ErrorResult>(value);
+            result.isSuccess = false;
+            ResourceManager myManager = new ResourceManager(typeof(BankingErrors));
+            result.message = myManager.GetString(error.Code) is not default(string) ? myManager.GetString(error.Code) : ApiResultStatusCode.BadRequest.ToDisplay();
+            result.status = ApiResultStatusCode.BadRequest;
         }
-        var errorResult = JsonConvert.DeserializeObject<ErrorResult>(value);
-        throw new ArgumentException(errorResult.Code);
+        return result;
     }
 
-    protected TResult Post<TResult>(string route, object data)
+    protected ApiResult<TResult> Post<TResult>(string route, object data)
     {
         using var httpClient = new HttpClient();
 
@@ -166,14 +179,21 @@ public class BankingService
 
         var httpResponseMessage = httpClient.PostAsJsonAsync($"{_jibitSettings.BaseApiUrl}/{route}", data);
         string value = httpResponseMessage.Result.Content.ReadAsStringAsync().GetAwaiter().GetResult();
-        if (httpResponseMessage.Result.IsSuccessStatusCode)
-            return JsonConvert.DeserializeObject<TResult>(value);
+        var response = JsonConvert.DeserializeObject<TResult>(value);
+        var result = new ApiResult<TResult>(true, ApiResultStatusCode.Success, response);
 
-        var errorResult = JsonConvert.DeserializeObject<ErrorResult>(value);
-        throw new ArgumentException(errorResult.Code);
+        if (!httpResponseMessage.Result.IsSuccessStatusCode)
+        {
+            var error = JsonConvert.DeserializeObject<ErrorResult>(value);
+            result.isSuccess = false;
+            ResourceManager myManager = new ResourceManager(typeof(BankingErrors));
+            result.message = myManager.GetString(error.Code) is not default(string) ? myManager.GetString(error.Code) : ApiResultStatusCode.BadRequest.ToDisplay(); 
+            result.status = ApiResultStatusCode.BadRequest;
+        }
+        return result;
     }
 
-    protected async Task<TResult> PostAsync<TResult>(string route, object data)
+    protected async Task<ApiResult<TResult>> PostAsync<TResult>(string route, object data)
     {
         using var httpClient = new HttpClient();
 
@@ -184,11 +204,17 @@ public class BankingService
 
         var httpResponseMessage = await httpClient.PostAsJsonAsync($"{_jibitSettings.BaseApiUrl}/{route}", data);
         string value = await httpResponseMessage.Content.ReadAsStringAsync();
-        if (httpResponseMessage.IsSuccessStatusCode)
-            return JsonConvert.DeserializeObject<TResult>(value);
+        var response = JsonConvert.DeserializeObject<TResult>(value);
+        var result = new ApiResult<TResult>(true, ApiResultStatusCode.Success, response);
 
-        var errorResult = JsonConvert.DeserializeObject<ErrorResult>(value);
-        throw new ArgumentException(errorResult.Code);
+        if (!httpResponseMessage.IsSuccessStatusCode)
+        {
+            var error = JsonConvert.DeserializeObject<ErrorResult>(value);
+            result.isSuccess = false;
+            ResourceManager myManager = new ResourceManager(typeof(BankingErrors));
+            result.message = myManager.GetString(error.Code) is not default(string) ? myManager.GetString(error.Code) : ApiResultStatusCode.BadRequest.ToDisplay(); result.status = ApiResultStatusCode.BadRequest;
+        }
+        return result;
     }
 
     protected async void CheckAuthentication()

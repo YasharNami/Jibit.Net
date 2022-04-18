@@ -6,7 +6,7 @@
     <Nullable>enable</Nullable>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <NeutralLanguage>fa-IR</NeutralLanguage>
-    <PackageReleaseNotes>افزوده شدن امکاناتی از جمله : بررسی مطابقت شماره شبا و نام و نام خانوادگی، بررسی مطابقت شماره کارت و نام و نام خانوادگی و سایر موارد زیرساختی</PackageReleaseNotes>
+    <PackageReleaseNotes>افزوده شدن امکاناتی از جمله : بررسی مطابقت شماره شبا و نام و نام خانوادگی، </PackageReleaseNotes>
     <PackageTags>Jibit Jibit.Net</PackageTags>
     <Description>Jibit Payment, Banking and KYC Service</Description>
     <Company>Viral-Team</Company>
@@ -21,22 +21,6 @@
 
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
-    <PackageReference Include="System.Resources.ResourceManager" Version="4.3.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Compile Update="Banking\Resources\BankingErrors.Designer.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>BankingErrors.resx</DependentUpon>
-    </Compile>
-  </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Update="Banking\Resources\BankingErrors.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>BankingErrors.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
   </ItemGroup>
 
   <ItemGroup>
