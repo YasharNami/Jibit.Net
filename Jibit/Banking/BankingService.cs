@@ -15,7 +15,9 @@ public class BankingService
     public BankingService(JibitSettings setting) => _jibitSettings = setting;
 
 
-    // تبدیل شماره کارت بانکی به شماره شبا
+    /// <summary>
+    ///  تبدیل شماره کارت بانکی به شماره شبا
+    /// </summary>
     public ApiResult<CartToIBanResult> CardToIBan(string cardNumber)
     {
         CheckAuthentication();
@@ -27,7 +29,9 @@ public class BankingService
         return await GetAsync<CartToIBanResult>($"cards?number={cardNumber}&iban=true");
     }
 
-    // دریافت اطلاعات کارت بانکی از طریق شماره کارت
+    /// <summary>
+    /// دریافت اطلاعات کارت بانکی از طریق شماره کارت
+    /// </summary>
     public ApiResult<CardInfoResult> GetCardInfo(string cardNumber)
     {
         CheckAuthentication();
@@ -38,8 +42,9 @@ public class BankingService
         await CheckAuthenticationAsync();
         return await GetAsync<CardInfoResult>($"cards?number={cardNumber}");
     }
-
-    // دریافت اطلاعات کارت بانکی از طریق شماره شبا
+    /// <summary>
+    /// دریافت اطلاعات کارت بانکی از طریق شماره شبا
+    /// </summary>
     public ApiResult<IBanInfoResult> GetIbanInfo(string ibanNumber)
     {
         CheckAuthentication();
@@ -50,8 +55,9 @@ public class BankingService
         await CheckAuthenticationAsync();
         return await GetAsync<IBanInfoResult>($"ibans?value=IR{ibanNumber}");
     }
-
-    // بررسی مطابقت شماره شبا و نام و نام خانوادگی
+    /// <summary>
+    ///  بررسی مطابقت شماره شبا و نام و نام خانوادگی
+    /// </summary>
     public ApiResult<IBanAndFullNameMatchModel> IsIBanAndFullNameMatch(string ibanNumber, string fullName)
     {
         CheckAuthentication();
@@ -62,8 +68,9 @@ public class BankingService
         await CheckAuthenticationAsync();
         return await GetAsync<IBanAndFullNameMatchModel>($"services/matching?iban=IR{ibanNumber}&name={fullName}");
     }
-
-    // بررسی مطابقت شماره کارت و نام و نام خانوادگی
+    /// <summary>
+    ///  بررسی مطابقت شماره کارت و نام و نام خانوادگی
+    /// </summary>
     public ApiResult<CardNumberAndFullNameMatchModel> IsCardNumberAndFullNameMatch(string cardNumber, string fullName)
     {
         CheckAuthentication();
